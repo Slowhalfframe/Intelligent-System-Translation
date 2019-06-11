@@ -1,0 +1,35 @@
+
+body{
+    background-color: #f1f1f1;
+}
+
+/*main{*/
+    /*width: 100%;*/
+    /*min-height: 500px;*/
+    /*background-color: #aaa;*/
+    /*margin-top: 21px;*/
+/*}*/
+.register{
+    /*height: 60vh;*/
+    min-height: 488px;
+    width: 666px;
+    background-color: #f9f9f9;
+    margin: 55px auto;
+    border-radius: 22px;
+    }
+/*.register > form{*/
+    /*padding: 33px 11px;*/
+/*}*/
+
+.box{
+    width: 88%;
+    height: 400px;
+    /*background-color: #aaa;*/
+    margin:0 auto;
+    padding-top: 50px;
+}
+#msg{
+    color: red;
+    text-align: center;
+    margin-bottom: 20px;
+}

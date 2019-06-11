@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block title_name %}
+工作主页
+{% endblock %}
+{%  block nav %}
+    <!-- 导航开始 -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'work/css/app/index.css' %}">
+<link rel="stylesheet" href="{% static 'work/css/app/simpleAlert.css' %}">
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <!--<a class="navbar-brand" href="/work/">人机共译系统</a>-->
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="/work/">主页 <span class="sr-only">(current)</span></a></li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+          {% if user.username %}
+          <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{request.user}} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/users/{{request.user.id}}/user_info/">我的资料</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="/users/user_logout/">安全退出</a></li>
+          </ul>
+        </li>
+
+          {% else %}
+            <li><a href="{% url 'users:register' %}">注册</a></li>
+            <li><a href="{% url 'users:sign_in' %}">登录</a></li>
+          {% endif %}
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+    <!-- 导航结束 -->
+{% endblock %}
+{% block main %}
+
+<main style="background-color: #f1f1f1;">
+    <div class="box">
+        <div class="top"></div>
+        <div class="update">
+            <h3>创建项目</h3>
+            <!--<form action="/work/file_update/" method="post" enctype="multipart/form-data">-->
+                <!--{% csrf_token %}-->
+                <!--<input type="file" name="file" id="file">-->
+                <!--<input type="submit" value="提交">-->
+            <!--</form>-->
+            <a href="javascript:void(0);" id="update">上传文件</a>
+        </div>
+        <div class="my_pro">
+            <h3>我的项目</h3>
+            <table class="table table-responsiv table-condensed table-hover table-bordered table-striped">
+              <tr class="active">
+                  <th>项目名称</th>
+                  <th>状态</th>
+                  <th>创建时间</th>
+                  <th>翻译方向</th>
+                  <th colspan="3">操作</th>
+              </tr>
+                {% if files %}
+                    {% for f in files %}
+                        {% if f.file_status != 2 %}
+                          <tr>
+                              <td>{{f.file_name}}</td>
+                              {% if f.file_status == 1 %}
+                                <td>进行中</td>
+                              {% elif f.file_status == 0 %}
+                                <td>已完成</td>
+                              {% endif %}
+                              <td>{{f.file_create_time}}</td>
+                              <td>
+                                  {% if f.yuan == 1 %}
+                                  中
+                                  {% elif f.yuan == 2 %}
+                                  英
+                                  {% elif f.yuan == 3 %}
+                                  德
+                                  {% endif %}
+                                  译
+                                  {% if f.mubiao == 1 %}
+                                  中
+                                  {% elif f.mubiao == 2 %}
+                                  英
+                                  {% endif %}</td>
+
+                              {% if f.yuan == 1 %}
+                              <td><a href="/work/work/?id={{f.id}}&type=work">编辑</a></td>
+                              {% elif f.yuan == 2 %}
+                              <td><a href="/work/work/?id={{f.id}}&type=enwork">编辑</a></td>
+                              {% else %}
+                              <td><a href="/work/work/?id={{f.id}}&type=de_zh">编辑</a></td>
+                              {% endif %}
+                              <td><a href="/work/downloads/{{f.id}}/">导出</a></td>
+<!--                              <td><a href="javascript:void(0);" onclick="downloads({{ f.id }})">导出</a></td>-->
+                              <!--<td><a href="/work/{{f.id}}/del_file/" onclick="return window.confirm('确定删除这个项目吗？')">删除</a></td>-->
+                              <td><a href="javascript:void(0);" onclick="dblChoseAlert({{f.id}})">删除</a></td>
+                              {% csrf_token %}
+                          </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                <tr>
+                  <td colspan="5">
+                      <h5 style="font-weight: 800;color: #2b542c;">暂无项目</h5>
+                  </td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</main>
+{% load static %}
+<script src="{% static 'js/lib/jquery.js' %}"></script>
+<script src="{% static 'work/js/lib/simpleAlert.js' %}"></script>
+
+<script language="javascript" type="text/javascript">
+    //以下方式直接跳转
+    $("#update").click(function () {
+        window.location.href='../work/update/';
+    })
+
+    // $(function (obj) {
+        //单次双选弹框
+        // $(".dblChoseAlert").click(function () {
+        function dblChoseAlert(obj) {
+            id = obj
+            console.log(id)
+            var dblChoseAlert = simpleAlert({
+                "title": "",
+                "content": "智宝：确定删除这个项目吗？",
+                "buttons": {
+                    "确定": function () {
+                        // alert("你好");
+                        dblChoseAlert.close();
+                        window.location.href = '/work/' + id + '/del_file/';
+                    },
+                    "取消": function () {
+                        dblChoseAlert.close();
+                    }
+                }
+            })
+        }
+
+//         function downloads(file_id) {
+//     var domain = document.domain;
+//     var token = $('input[name=csrfmiddlewaretoken]').val();
+//     console.log(file_id, token);
+//     $.ajax({
+//         url: '/work/downloads/' + file_id + '/',
+//         method: "POST",
+//         dataType: "json",
+//         data: {'csrfmiddlewaretoken': token},
+//         success: function (data) {
+//             if (data.code == 0) {
+//                 url = domain + '/' + data.data;
+//                 var $eleForm = $("<form method='get'></form>");
+//                 $eleForm.attr("action", "http://" + url);
+//                 $(document.body).append($eleForm);
+//                 //提交表单，实现下载
+//                 $eleForm.submit();
+//             } else {
+//                 alert(data.msg)
+//             }
+//
+//         }
+//     })
+// }
+</script>
+{% endblock %}

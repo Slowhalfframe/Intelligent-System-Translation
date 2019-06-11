@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title_name %}
+工作主页
+{% endblock %}
+{%  block nav %}
+<!-- 导航开始 -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!--<a class="navbar-brand" href="/work/">人机共译系统</a>-->
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/work/">主页 <span class="sr-only">(current)</span></a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.username %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">{{request.user}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/users/{{request.user.id}}/user_info/">个人主页</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/users/user_logout/">安全退出</a></li>
+                    </ul>
+                </li>
+
+                {% else %}
+                <li><a href="{% url 'users:register' %}">注册</a></li>
+                <li><a href="{% url 'users:sign_in' %}">登录</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<!-- 导航结束 -->
+{% endblock %}
+{% block main %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'work/css/app/index.css' %}">
+<link rel="stylesheet" href="{% static 'work/css/app/trans_type.css' %}">
+
+<main style="background-color: #f1f1f1;">
+    <div class="box">
+        <div class="top"></div>
+        <form enctype="multipart/form-data" method="post" action="/work/trans_type/">
+            {% csrf_token %}
+            <input type="text" value="{{id}}" name="id"  hidden="hidden">
+            <!--<h3>文件名称：{{msg}}</h3>-->
+            <table class="table table-bordered table-hover table-responsive">
+                <tr>
+                    <th>机器翻译:</th>
+                    <td>
+                        <div class="checkbox">
+                            <label>
+                              <input type="radio" name="zl" value="1" checked="checked"> 百度翻译
+                            </label>
+                        </div>
+                    </td>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class="checkbox">
+                            <label>
+                              <input type="radio" name="zl" value="2"> 搜狗翻译
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>记忆库</th>
+                    <td>
+
+                    </td>
+                </tr>
+                <tr>
+                    <th>术语库</th>
+                    <td>
+
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td><input type="submit" value="预翻译" class="btn btn-success"></td>
+                </tr>
+            </table>   
+        </form>
+    </div>
+</main>
+{% endblock %}

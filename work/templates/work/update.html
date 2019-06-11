@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title_name %}
+工作主页
+{% endblock %}
+{%  block nav %}
+<!-- 导航开始 -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!--<a class="navbar-brand" href="/work/">人机共译系统</a>-->
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/work/">主页 <span class="sr-only">(current)</span></a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.username %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">{{request.user}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/users/{{request.user.id}}/user_info/">个人主页</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/users/user_logout/">安全退出</a></li>
+                    </ul>
+                </li>
+
+                {% else %}
+                <li><a href="{% url 'users:register' %}">注册</a></li>
+                <li><a href="{% url 'users:sign_in' %}">登录</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<!-- 导航结束 -->
+{% endblock %}
+{% block main %}
+{% load static %}
+<script src="{% static 'work/js/app/jquery-1.12.4.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'work/css/app/index.css' %}">
+<main style="background-color: #f1f1f1;">
+    <div class="box">
+        <div class="top"></div>
+        {{msg}}
+        <form enctype="multipart/form-data" method="post" action="/work/file_update/">
+            {% csrf_token %}
+            <a id="file_top" class="file_top">
+                <span id="show_name"></span>
+                <input required="required" type="file" name="file" id="file" onchange="fileChange(this);">
+            </a>
+            <!-- <input type="submit" value="上传" id="update_btn"> -->
+            <input class="btn btn-default btn-lg btn-block" type="submit" value="上传" id="update_btn">
+            <p>tips:暂时仅支持单次单个上传文件，且文件大小为2M以内，文件格式现仅支持.docx格式。</p>
+        </form>
+    </div>
+
+
+</main>
+<script>
+    function fileChange(target) {
+     var fileSize = 0;         
+     if (!target.files) {     
+       var filePath = target.value;     
+       var fileSystem = new ActiveXObject("Scripting.FileSystemObject");        
+       var file = fileSystem.GetFile (filePath);
+       fileSize = file.Size;
+     } else {    
+      fileSize = target.files[0].size;
+        console.log("2")
+         name = target.value.substring(target.value.lastIndexOf("\\")+1).toLowerCase()
+         $("#show_name").text("待上传文件："+name);
+         $("#file_top").css('background',"#f1f2f3")
+        console.log(name)
+      }
+      var size = fileSize / 1024;    
+      if(size>2000){  
+       alert("文件不能大于2M");
+       $("#show_name").text("点击选择上传文件")
+       target.value="";
+       return
+      }
+      var name=target.value;
+      var fileName = name.substring(name.lastIndexOf(".")+1).toLowerCase();
+      // if(fileName !="xls" && fileName !="xlsx"){
+      if(fileName !="docx"){
+          alert("请选择.docx格式文件上传！");
+                 $("#show_name").text("点击选择上传文件")
+          target.value="";
+          return
+      }
+    }
+
+
+  </script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title_name %}
+邮箱验证 提醒~
+{% endblock %}
+{% block nav %}
+<!-- 导航开始 -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">人机共译系统</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="/">首页 <span class="sr-only">(current)</span></a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+    <!-- 导航结束 -->
+{% endblock %}
+{%  block main %}
+<div class="container" style="min-height: 555px;text-align: center;">
+    <h1 style="color: green;margin-top: 200px;font-weight: 800;font-size: 55px;">注册成功~</h1>
+    <h2>需要点击邮箱的验证链接才可以继续使用哟~</h2>
+    <h3>快去查看您注册邮箱的邮件吧！</h3>
+</div>
+{% endblock %}

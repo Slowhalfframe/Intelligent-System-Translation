@@ -1,0 +1,87 @@
+.box{
+    width: 80%;
+    /*height: 1100px;*/
+    /*background-color: #111;*/
+    margin:0 auto 50px;
+}
+.top{
+    width: 100%;
+    height: 55px;
+}
+.update, .my_pro{
+    width: 90%;
+    /*height: 160px;*/
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 10px 22px 33px;
+}
+.update a{
+    display: inline-block;
+    width: 180px;
+    height: 60px;
+    background-color: #2997db;
+    margin: 10px 35%;
+    text-align: center;
+    line-height: 60px;
+    font-size: 16px;
+    color: #fff;
+}
+.update a:hover{
+    text-decoration: none;
+}
+.my_pro{
+    margin-top: 20px;
+    font-size: 15px;
+}
+
+h3{
+    margin-bottom: 30px;
+}
+.my_pro th, .my_pro td{
+    text-align: center;
+}
+form{
+    width: 450px;
+    height: 300px;
+    /*border: 1px solid #111;*/
+    margin: 100px auto;
+}
+form p {
+    margin-top: 22px;
+    color: #2997db;
+    font-size: 15px;
+    line-height: 26px;
+}
+#file{
+    display: inline-block;
+    width: 450px;
+    height: 80px;
+    border: 1px dashed #333;
+    border-radius: 15px;
+    font-size: 16px;
+    opacity: 0;
+    /*background-color: #2997db;*/
+    /*color: #fff;*/
+}
+#file_top{
+    display: inline-block;
+    width: 450px;
+    height: 80px;
+    border:1px dashed #333;
+    border-radius: 15px;
+    font-size: 16px;
+}
+.file_top{
+    background: url("./1.jpg");
+}.file_top:hover{
+    text-decoration: none;
+ }
+
+#file_top >span{
+    color: #3c763d;
+    margin: 3%;
+}
+#update_btn{
+    margin-top: 22px;
+}

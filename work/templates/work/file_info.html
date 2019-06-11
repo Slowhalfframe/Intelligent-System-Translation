@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block title_name %}
+工作主页
+{% endblock %}
+{%  block nav %}
+<!-- 导航开始 -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!--<a class="navbar-brand" href="/work/">人机共译系统</a>-->
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/work/">主页 <span class="sr-only">(current)</span></a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.username %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">{{request.user}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/users/{{request.user.id}}/user_info/">个人主页</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/users/user_logout/">安全退出</a></li>
+                    </ul>
+                </li>
+
+                {% else %}
+                <li><a href="{% url 'users:register' %}">注册</a></li>
+                <li><a href="{% url 'users:sign_in' %}">登录</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<!-- 导航结束 -->
+{% endblock %}
+{% block main %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'work/css/app/index.css' %}">
+<link rel="stylesheet" href="{% static 'work/css/lib/wui.css' %}">
+<script src="{% static 'work/js/lib/jquery-1.11.2.min.js' %}"></script>
+<script src="{% static 'work/js/lib/angular.min.js' %}"></script>
+<script src="{% static 'work/js/lib/wui-date.js' %}"></script>
+
+<main style="background-color: #f1f1f1;">
+    <div class="box">
+        <div class="top"></div>
+        <form enctype="multipart/form-data" method="post" action="/work/file_info/">
+            {% csrf_token %}
+            <!--<h3>文件名称：{{msg}}</h3>-->
+            <table class="table table-bordered table-hover table-responsive">
+                <tr>
+                    <th>文件名称:</th>
+                    <td>
+                        <input type="text" value="{{msg}}" name="name" class="form-control" id="exampleInputEmail1">
+                    </td>
+                </tr>
+                <tr>
+                    <th>源语言：</th>
+                    <td>
+                        <!--<input type="text" readonly="readonly">-->
+                         <input type="text" id="file_language" value="{{file_language}}" hidden>
+                        <select name="yuan" id="file_lan" required="required" class="form-control">
+                            <option value="0">选择源语言</option>
+                            <option value="1">中文</option>
+                            <option value="2">英文</option>
+                            <option value="3">德文</option>
+                        </select>
+                    </td>
+                </tr>
+                 <tr>
+                    <th>目标语言：</th>
+                    <td>
+                        <!--<input type="text" readonly="readonly">-->
+
+                        <select name="mubiao" id="" required="required" class="form-control">
+                            <option value="0">选择目标语言</option>
+                            <option value="1">中文</option>
+                            <option value="2">英文</option>
+                            <option value="3">德文</option>
+                        </select>
+                    </td>
+                </tr>
+                 <tr>
+                    <th>截至日期：</th>
+                    <td>
+                        <input type="text" name="over_time" id="ttime" hidden="hidden">
+                        <wui-date
+                            format="yyyy-mm-dd hh:mm"
+                            placeholder="请选择或输入日期"
+                            id="date3"
+                            btns="{'ok':'确定','now':'此刻'}"
+                            ng-model="date3"
+                        >
+                        </wui-date>
+                    </td>
+                </tr>
+                <input type="text" value="{{id}}" name="id" hidden>
+                <tr>
+                    <th>项目备注：</th>
+                    <td>
+                        <textarea name="info" class="form-control" rows="3"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input class="btn btn-info" type="submit" value="下一步">
+                    </td>
+                </tr>
+            </table>   
+        </form>
+    </div>
+    <script>
+
+
+        var app = angular.module('app',["wui.date"]);
+
+            $("#date3").click(function () {
+                // alert("11")
+                console.log(this.text)
+            })
+
+         $(function () {
+            var opts =$("#file_lan option");//得到数组option
+             console.log(opts)
+          var language = $('#file_language').val();
+             if (language == 'zh-cn')
+             {
+                 console.log('word是中文');
+                   opts[1].selected = true
+
+             }else if(language == 'en')
+            {
+                console.log('word是英文');
+                 opts[2].selected = true
+
+             }else if(language == 'de'){
+                 console.log('word是德文');
+                 opts[3].selected = true
+             }
+
+
+        })
+
+
+
+    </script>
+</main>
+{% endblock %}

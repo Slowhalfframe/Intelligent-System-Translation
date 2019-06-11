@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+{% block title_name %}
+    {{ request.user.username }}的个人主页
+{% endblock %}
+{% block main %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'users/css/app/user_info.css' %}">
+    <script src="{% static 'js/lib/jquery.js' %}"></script>
+    <main style="background-color: #f1f1f1;">
+        <div class="box">
+            <div class="top"></div>
+            <div class="info">
+                <h3>我的账户</h3>
+                <div class="row">
+                    <div class="left">
+                        <div class="col-md-6">
+                            <div class="user">
+                                <span class="span_one">用户 ID:</span>
+                                <span class="span_two">{{ request.user.id }}</span>
+                            </div>
+                            <div class="user">
+                                <span class="span_one">昵 &nbsp;&nbsp;&nbsp; 称:</span>
+                                <span class="span_two" id="old_span_uname">{{ request.user.username }}</span>
+                                <span class="span_two" style="display: none;" id="new_span_uname">
+                                <input type="text" placeholder="请输入新的昵称" name="new_u_name" id="new_u_name">
+                            </span>
+                            </div>
+                            <div class="user">
+                                <span class="span_one">邮 &nbsp;&nbsp;&nbsp; 箱:</span>
+                                <span class="span_two">{{ request.user.email }}</span>
+                            </div>
+                            <div class="user">
+                                <span class="span_one">手 &nbsp;&nbsp;&nbsp; 机:</span>
+                                {% if user.phone %}
+                                    <span class="span_two">{{ user_info.phone }}</span>
+                                {% else %}
+                                    <span class="span_two" style="color: red;">未绑定</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="col-md-2 col-md-offset-2">
+                            <span class="yz"> &nbsp; </span>
+                            <span class="yz"> &nbsp; </span>
+                            <span class="yz"> * 已绑定</span>
+                            <span class="yz"> &nbsp; </span>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="operation">
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#myModal">
+                                    修改密码
+                                </button>
+                                <!--<a href="#">修改密码</a>-->
+                            </div>
+                            <br>
+                            <div class="operation">
+                                <a class="btn btn-primary" href="javascript:void(0);" id="change_old_uname">修改昵称</a>
+                                <a class="btn btn-primary" href="javascript:void(0);" style="display: none;"
+                                   id="con_change">确定修改</a>
+                            </div>
+                            {#                        <div class="operation">#}
+                            {#                            <a href="#">修改邮箱</a>#}
+                            {#                        </div>#}
+                            {#                        <div class="operation">#}
+                            {#                            {% if user.phone %}#}
+                            {#                            <a href="#">修改手机</a>#}
+                            {#                            {% else %}#}
+                            {#                            <a href="#">绑定手机</a>#}
+                            {#                            {% endif %}#}
+                            {##}
+                            {#                        </div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="info">
+                <div class="title" style="height: 50px;">
+                    <h3>我的信息</h3>
+                    <button data-toggle="modal" data-target="#myModal2" class="pull-right btn btn-success"
+                            style="margin-right:30px;display: block;margin-top: -30px;">修改
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="left">
+                        <div class="col-md-6">
+                            <div class="user">
+                                <span class="span_one">性别：</span>
+                                <span class="o_span_two" id="sex_show">
+                                {% if user_info.xueli %}
+                                    {{ user_info.sex.sex_name }}
+                                {% else %}
+                                    未填写
+                                {% endif %}
+                            </span>
+                            </div>
+                            <div class="user">
+                                <span class="span_one">学历：</span>
+                                <span class="o_span_two" id="xueli">
+                                {% if user_info.xueli %}
+                                    {{ user_info.xueli.xueli_name }}
+                                {% else %}
+                                    未填写
+                                {% endif %}
+                            </span>
+                            </div>
+                            <div class="user">
+                                <span class="span_one">专业：</span>
+                                <span class="o_span_two" id="zhuanye">
+                                {% if user_info.zhuanye %}
+                                    {{ user_info.zhuanye }}
+                                {% else %}
+                                    未填写
+                                {% endif %}
+                            </span>
+                            </div>
+                            <div class="user">
+                                <span class="span_one">工作性质：</span>
+                                <span class="o_span_two">全职/兼职/自由译员/审校</span>
+                            </div>
+                            <div class="user">
+                                <span class="span_one">擅长领域：</span>
+                                <span class="o_span_two">法律/金融/财税/机械/IT/化工/医药</span>
+                            </div>
+                            <div class="user">
+                                <span class="span_one">擅长类型：</span>
+                                <span class="o_span_two">英译中/中译英</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="msg"></p>
+                        <form class="form-horizontal" action="/users/change_pwd/" method="post">
+                            <div class="form-group">
+                                <label for="old_pwd" class="col-sm-2 control-label">旧密码</label>
+                                {% csrf_token %}
+                                <div class="col-sm-10" id="old">
+                                    <input type="text" class="form-control" id="old_pwd" name="old_pwd"
+                                           placeholder="请输入旧密码">
+                                </div>
+                            </div>
+                            <div class="form-group" id="new">
+                                <label for="new_pwd" class="col-sm-2 control-label">新密码</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="new_pwd" name="new_pwd"
+                                           placeholder="请输入新密码">
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="new2">
+                                <label for="new_pwd2" class="col-sm-2 control-label">确认密码</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="new_pwd2" name="new_pwd2"
+                                           placeholder="请再次确认新密码">
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="btn">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" id="change" class="btn btn-default">修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal2 -->
+        <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">完善个人信息</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="msg"></p>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="xl" class="col-sm-2 control-label">学历:</label>
+                                {% csrf_token %}
+                                <div class="col-sm-10" id="old">
+                                    {#                                <input type="text" class="form-control" id="xl" name="xl"#}
+                                    {#                                       placeholder="请输入您的学历">#}
+                                    <select name="xl" id="xl" class="form-control">
+                                        <option value="0" selected>请选择您的学历</option>
+                                        <option value="1" {% if user_info.xueli.id == 1 %}selected{% endif %}>本科</option>
+                                        <option value="2" {% if user_info.xueli.id == 2 %}selected{% endif %}>硕士</option>
+                                        <option value="3" {% if user_info.xueli.id == 3 %}selected{% endif %}>博士</option>
+                                        <option value="4" {% if user_info.xueli.id == 4 %}selected{% endif %} >博士后</option>
+                                        <option value="5" {% if user_info.xueli.id == 5 %}selected{% endif %}>其它</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" id="new">
+                                <label for="zy" class="col-sm-2 control-label">专业:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="zy" name="zy"
+                                           placeholder="请输入您的专业" value="{% if user_info.zhuanye%}{{ user_info.zhuanye }}{% else %}{% endif %}">
+                                </div>
+                            </div>
+                            <div class="form-group" id="new">
+                                <label for="sex" class="col-sm-2 control-label">性别:</label>
+                                <div class="col-sm-10">
+                                    <input type="radio" name="sex" id="1" {% if user_info.sex.id == 1 %}checked{% endif %}> 男 &nbsp;&nbsp;
+                                    <input type="radio" name="sex" id="2" {% if user_info.sex.id == 2 %}checked{% endif %}> 女 &nbsp;&nbsp;
+                                    <input type="radio" name="sex" id="3" {% if user_info.sex.id == 3 %}checked{% endif %}> 保密
+                                </div>
+                            </div>
+                            <div class="col-sm-10 col-md-offset-2">
+                                <p id="msg_info"></p>
+                            </div>
+                            <div class="form-group" id="btn">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <input type="button" id="editor_userinfo" class="btn btn-success" value="修改">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" onclick="off()" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <script type="text/javascript">{{script}}('{{wrong}}')</script>
+    <script>
+        // 验证旧密码
+        $(function () {
+            $("#old_pwd").on("blur", function () {
+                old_pwd = $("#old_pwd").val()
+                console.log(old_pwd)
+                $.ajax({
+                    url: "/users/" + old_pwd + "/check_password/",
+                    method: "POST",
+                    dataType: "json",
+                    data: {"csrfmiddlewaretoken": "{{ csrf_token }}"},
+                    success: function (data) {
+                        if (data.success) {
+                            $("#btn").css("display", "block");
+                            $("#new").css("display", "block");
+                            $("#new2").css("display", "block");
+                            $("#msg").html("<span style='color:green;'>" + data.msg + "</span>")
+                        } else {
+                            $("#btn").css("display", "none");
+                            $("#new").css("display", "none");
+                            $("#new2").css("display", "none");
+                            $("#msg").html("<span style='color:red;font-size: 12px;line-height: 5px;'>" + data.msg + "</span>")
+                        }
+                    }
+                })
+            })
+        })
+
+        // 点击修改昵称
+        $(function () {
+            $("#change_old_uname").click(function () {
+                // $("#old_span_uname").css("display", "none");
+                $("#new_span_uname").css("display", "block");
+                $("#new_span_uname").css("float", "right");
+                $("#change_old_uname").css("display", "none");
+                $("#con_change").css("display", "block");
+            })
+        })
+
+        // 点击修改昵称
+        $(function () {
+            $("#con_change").click(function () {
+                new_uname = $("#new_u_name").val();
+                if (new_uname.length > 0) {
+                    console.log(old_pwd)
+                    $.ajax({
+                        url: "/users/" + new_uname + "/change_username/",
+                        method: "POST",
+                        dataType: "json",
+                        data: {"csrfmiddlewaretoken": "{{ csrf_token }}"},
+                        success: function (data) {
+                            if (data.success) {
+                                // $("#new2").css("display", "block");
+                                // $("#msg").html("<span style='color:green;'>" + data.msg + "</span>")
+                                window.location.reload()
+                            } else {
+                                // $("#btn").css("display", "none");
+                                // $("#msg").html("<span style='color:red;font-size: 12px;line-height: 5px;'>" + data.msg + "</span>")
+                                alert("修改失败，可能网络出现问题，请刷新重试！")
+                            }
+                        }
+                    })
+                } else {
+                    alert("新昵称长度不足")
+                }
+            })
+        })
+
+        $("#editor_userinfo").click(function () {
+            xueli = $("#xl").val();
+            zhuanye = $("#zy").val();
+            sex = $('input:radio:checked').attr('id');
+            console.log(xueli, zhuanye, sex);
+            if (xueli != 0) {
+                if (zhuanye.length > 1) {
+                    $.ajax({
+                        url: '/users/change_userinfo/',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {"csrfmiddlewaretoken": "{{ csrf_token }}", 'zhuanye': zhuanye, 'xueli': xueli, 'sex':sex},
+                        success: function (data) {
+                            console.log(data);
+                            if (data.code == 0) {
+                                $("#msg_info").empty();
+                                $("#zhuanye").empty();
+                                $("#xueli").empty();
+                                $("#sex_show").empty();
+                                $("#msg_info").html("<span style='color:green;'>修改完成。</span>");
+                                $("#zhuanye").append(data.data.zhuanye);
+                                $("#xueli").append(data.data.xueli);
+                                $("#sex_show").append(data.data.sex);
+                            } else {
+                                $("#msg_info").empty();
+                                $("#msg_info").html("<span style='color:red;'>" + data.msg + "</span>");
+                            }
+                        }
+                    })
+                } else {
+                    $("#msg_info").empty();
+                    $("#msg_info").html("<span style='color:red;'>您的专业项填写不规范</span>")
+                }
+            } else {
+                $("#msg_info").empty();
+
+                $("#msg_info").html("<span style='color:red;'>您的学历项选择不规范</span>")
+            }
+
+        })
+    function off() {
+        $("#msg_info").empty();
+    }
+    </script>
+
+
+{% endblock %}

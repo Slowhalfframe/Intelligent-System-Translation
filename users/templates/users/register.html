@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% block title_name %}
+注册——等你很久了~
+{% endblock %}
+
+
+{% block main %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'users/css/app/register.css' %}">
+<script src="{% static 'js/lib/jquery.js' %}"></script>
+<div class="register">
+    <div class="box">
+        <h2 style="margin-bottom: 20px;">用户注册</h2>
+        <h5 id="msg">{{msg}}</h5>
+        <form class="form-horizontal" method="post" action="/users/register/">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username" class="col-sm-2 control-label">昵称：</label>
+                <div class="col-sm-10">
+                    <input type="text" required="required" name='username' class="form-control" id="username" placeholder="请输入您的昵称">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">邮箱：</label>
+                <div class="col-sm-10">
+                    <input type="email" required="required" name='email' class="form-control" id="email" placeholder="请输入您的邮箱">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password" class="col-sm-2 control-label">密码：</label>
+                <div class="col-sm-10">
+                    <input type="password" required="required" name="password" class="form-control" id="password" placeholder="请输入密码">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password" class="col-sm-2 control-label">确认密码：</label>
+                <div class="col-sm-10">
+                    <input type="password" required="required" name="confirm_password" class="form-control" id="confirm_password"
+                           placeholder="请确认密码">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="yzm" class="col-md-2 control-label">验证码：</label>
+                <div class="col-md-4">
+                    <input type="text" autocomplete="off" id="yzm" class="form-control" placeholder="请输入验证码" name="code"
+                           required="required">
+                </div>
+                <div class="col-md-4">
+                    <a onclick="changeCode()" href="javascript:void(0)"><img id="code" src="{% url 'users:code' %}"
+                                                                             alt="验证码" title="点击刷新验证码"></a>
+                </div>
+                <!--<div class="col-md-2">-->
+                <!--<a onclick="changeCode()" href="javascript:void(0)">点击刷新验证码</a>-->
+                <!--</div>-->
+                <div class="col-md-2"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" id="sub_btn" class="btn btn-default">注册</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    // 刷新验证码
+    function changeCode() {
+        document.getElementById("code").src = "/users/code/?id=" + Math.random()
+    }
+    // 验证邮箱
+    $(function () {
+        $("#email").on("blur", function () {
+            email = $("#email").val()
+            if (email.length > 1){
+                $.ajax({
+                    url: "/users/" + email + "/checkemail/",
+                    method: "POST",
+                    dataType: "json",
+                    data: {"csrfmiddlewaretoken": "{{ csrf_token }}"},
+                    success: function (data) {
+                        if (data.success) {
+                            // $("#sub_btn").removeAttr("disabled")
+                            // $("#sub_btn").css("display","block");
+                            $("#msg").html("<span style='color:green;'>" + "" + "</span>")
+                            {#$("#msg").html("<span style='color:green;'>" + data.msg + "</span>")#}
+                        } else {
+                            // $("#uname").addClass("has-error")
+                            // $("#sub_btn").attr("disabled", true)
+                            $("#msg").html("<span style='color:red;font-size: 12px;line-height: 5px;'>" + data.msg + "</span>")
+                        }
+                    }
+                })
+            }else{
+                $("#msg").html("<span style='color:red;font-size: 12px;line-height: 5px;'>" + "邮箱不能为空" + "</span>")
+                }
+        })
+
+        // 验证用户名
+        $("#username").on("blur", function () {
+            username = $("#username").val()
+            if (username.length > 1) {
+                $.ajax({
+                    url: "/users/" + username + "/checkusername/",
+                    method: "POST",
+                    dataType: "json",
+                    data: {"csrfmiddlewaretoken": "{{ csrf_token }}"},
+                    success: function (data) {
+                        if (data.success) {
+                            // $("#sub_btn").removeAttr("disabled")
+                            // $("#sub_btn").css("display","block");
+                            $("#msg").html("<span style='color:green;'>" + "" + "</span>")
+                            {#$("#msg").html("<span style='color:green;'>" + data.msg + "</span>")#}
+                        } else {
+                            // $("#uname").addClass("has-error")
+                            // $("#sub_btn").attr("disabled", true)
+                            $("#msg").html("<span style='color:red;font-size: 12px;line-height: 5px;'>" + data.msg + "</span>")
+                        }
+                    }
+                })
+            }else{
+                $("#msg").html("<span style='color:red;font-size: 12px;line-height: 5px;'>" + "昵称不能为空" + "</span>")
+            }
+        })
+
+
+        // 验证密码
+        $(function () {
+            $("#password").on("blur", function () {
+                password = $("#password").val()
+                if (password.length < 6) {
+                    // $("#pwb").addClass("has-error")
+                    // $("#sub_btn").attr("disabled", true)
+                    $("#msg").html("<span style='color:red;'>" + "密码长度不足6位" + "</span>")
+                } else {
+                    // $("#pwb").addClass("has-success")
+                    // $("#sub_btn").removeAttr("disabled")
+                    // $("#sub_btn").css("display","block");
+                    $("#msg").html("<span style='color:green;'>" + "" + "</span>")
+                    {#$("#msg").html("<span style='color:green;'>" + "密码合法！！请继续输入" + "</span>")#}
+                }
+            })
+        })
+        // 第二次密码验证
+        $(function () {
+            $("#confirm_password").on("blur", function () {
+                confirm_password = $("#confirm_password").val()
+                if (confirm_password != password) {
+                    // $("#pwb2").addClass("has-error")
+                    // $("#sub_btn").attr("disabled", true)
+                    $("#msg").html("<span style='color:red;'>" + "两次密码不一致，请重新输入" + "</span>")
+                } else {
+                    // $("#pwb2").addClass("has-success")
+                    // $("#sub_btn").removeAttr("disabled")
+                    {#$("#sub_btn").css("display", "block");#}
+                    $("#msg").html("<span style='color:green;'>" + "" + "</span>")
+                    {#$("#msg").html("<span style='color:green;'>" + "两次密码一致,请注册" + "</span>")#}
+                }
+            })
+        })
+        // 验证验证码
+        $(function () {
+            $("#yzm").on("blur", function () {
+                yzm = $("#yzm").val()
+                $.ajax({
+                    url: "/users/" + yzm + "/checkcode/",
+                    method: "POST",
+                    dataType: "json",
+                    data: {"csrfmiddlewaretoken": "{{ csrf_token }}"},
+                    success: function (data) {
+                        if (data.success) {
+                            // $("#sub_btn").removeAttr("disabled")
+                            // $("#sub_btn").css("display","block");
+                            $("#msg").html("<span style='color:green;'>" + "" + "</span>")
+                            {#$("#msg").html("<span style='color:green;'>" + data.msg + "</span>")#}
+                        } else {
+                            // $("#uname").addClass("has-error")
+                            // $("#sub_btn").attr("disabled", true)
+                            {#$("#sub_btn").css("display", "none");#}
+                            $("#msg").html("<span style='color:red;font-size: 12px;line-height: 5px;'>" + data.msg + "</span>")
+                        }
+                    }
+                })
+            })
+
+        })
+    })
+
+</script>
+{% endblock %}

@@ -1,0 +1,53 @@
+.box{
+    width: 80%;
+    height: 1100px;
+    /*background-color: #111;*/
+    margin:0 auto 50px;
+}
+.top{
+    width: 100%;
+    height: 55px;
+}
+.info{
+    width: 90%;
+    background-color: #fff;
+    margin: 20px auto;
+    padding: 20px 20px 30px;
+    border-radius: 20px;
+    font-size: 16px;
+}
+.info .user  .span_one,.info .user .span_two{
+    display: inline-block;
+    width: 30% ;
+    padding-left: 5%;
+    color: #666;
+    margin-top: 20px;
+    height: 25px;
+}
+.info .yz{
+    width: 90%;
+    display: inline-block;
+    margin-top: 20px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    color: green;
+    /*background-color: #aaa;*/
+ }
+.info .operation{
+    /*width: 80%;*/
+    display: inline-block;
+    /*background-color: #2997db;*/
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+/*.info .operation a{*/
+    /*font-size: 15px;*/
+    /*color: #fff;*/
+/*}*/
+.o_span_two{
+    width: 60%;
+}

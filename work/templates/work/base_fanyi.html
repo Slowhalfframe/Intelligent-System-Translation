@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+{% block title_name %}
+    工作主页
+{% endblock %}
+{% block nav %}
+<style>
+    body{
+        padding-top:0;
+    }
+    footer{
+        position:relative;
+    }
+    #top_top{
+        margin-top: 30px;
+        margin-right: 10%;
+        display: none;
+    }
+    #progress{
+        height: 20px;
+        /*background-color: #111;*/
+        position: fixed;
+        bottom: 3%;
+        left: 0;
+    }
+    #on_jindu{
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        background-color: #fff;
+    }
+    #history_income_list{
+        margin-bottom: 50px;
+    }
+</style>
+    <!-- 导航开始 -->
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!--<a class="navbar-brand" href="/work/">人机共译系统</a>-->
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="/work/">主页 <span class="sr-only">(current)</span></a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    {% if user.username %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false">{{ request.user }} <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/users/{{ request.user.id }}/user_info/">个人主页</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="/users/user_logout/">安全退出</a></li>
+                            </ul>
+                        </li>
+
+                    {% else %}
+                        <li><a href="{% url 'users:register' %}">注册</a></li>
+                        <li><a href="{% url 'users:sign_in' %}">登录</a></li>
+                    {% endif %}
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <!-- 导航结束 -->
+{% endblock %}
+{% block main %}
+    {% load static %}
+    <!--<link rel="stylesheet" href="{% static 'work/css/app/index.css' %}">-->
+    <link rel="stylesheet" href="{% static 'work/css/app/work.css' %}">
+    <link rel="stylesheet" href="{% static 'css/lib/layui.css' %}">
+<div id="progress" class="col-md-1">
+    <div class="layui-progress" lay-showPercent="yes">
+      <div class="layui-progress-bar layui-bg-green"  lay-percent="50%" id="pro_num"></div>
+    </div>
+</div>
+    <main style="background-color: #fff;">
+        <div class="box">
+            <!--<div class="zw"></div>-->
+            <div class="top" id="top">
+                <div id="top-left">
+                    <div class="serch">
+                        <form action="/work/serch_yuanwen/{{ file_id }}/" method="post">
+                            {% csrf_token %}
+                            <input type="text" placeholder="搜索原文" id="s1" name="yuanwen_keyword">
+                        </form>
+                        <form action="/work/serch_yiwen/{{ file_id }}/" method="post">
+                            {% csrf_token %}
+                            <input type="text" placeholder="搜索译文" id="s2" name="yiwen_keyword">
+                        </form>
+                    </div>
+                    <div id="tih">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">原文替换
+                        </button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">译文替换
+                        </button>
+                    </div>
+                </div>
+                <div id="top-right">
+                    <a class="btn btn-info pull-right" href="#top-top" id="top_top">回到顶部</a>
+                    <div id="down">
+                        <div class="dropdown" style="height: 66px;">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" disabled="true" title="正在预编译，请稍后">
+                                导出
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+<!--                                <li><a href="javascript:void(0);" onclick="downloads({{ file_id }})">导出译文</a></li>-->
+<!--                                <li><a href='javascript:void(0);'-->
+<!--                                       onclick="shuangyu_downloads({{ file_id }})">导出双语对照版</a></li>-->
+                                <li><a href="/work/downloads/{{file_id}}/">导出译文</a></li>
+                                <li><a href="/work/shuangyu_downloads/{{file_id}}/">导出双语对照版</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="bc">
+                        <button class="btn btn-default" id="all_change" style="margin-left: 8%;">全部提交</button>
+                        <button class="btn btn-default" id="all_save" onclick="all_save()" style="margin-left: 1%;">
+                            全部保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="box" id="content" style="margin-bottom: 25px;">
+                <table id="history_income_list" class="table table-striped table-bordered table-hover table-responsive">
+                    <tr class="active"><a name="top-top"></a>
+                        <th>句段</th>
+                        <th class="yuanwen">原文栏</th>
+                        <th>状态</th>
+                        <th class="yiwen">译文栏</th>
+                        <th>MT选择</th>
+                        <th>提交</th>
+                    </tr>
+                    {% for f,y in wenjian %}
+                    {% if f.yuanwen %}
+                    <tr data-uid={{ forloop.counter }}>
+                        <form>
+                            {% csrf_token %}
+                            <td id="index">{{ forloop.counter }}</td>
+                            <td id="yuanwen" class="yuanwen" name="yuanwen" style="text-align: left;"
+                                style="position:relative;">
+                                <a href="javascript:void(0);" style="display: none;" class="change_befor"
+                                   onclick="change_befor({{ f.id }})" id="change_befor{{ f.id }}"><i class="jb"
+                                                                                                     id="jb{{ f.id }}"></i></a>
+                                <a href="javascript:void(0);" style="display: none;" class="change_old"
+                                   onclick="change_old({{ f.id }})" id="change_old{{ f.id }}"><i class="jb-old"
+                                                                                                 id="jb_old{{ f.id }}"></i></a>
+                                <div class="textarea yuanwen_change" id="yuanwen_change{{ f.id }}"
+                                     contenteditable="true"
+                                     onblur="yuanwen_change({{ f.id }})">
+                                    {{ f.yuanwen }}
+                                </div>
+                            </td>
+                            <td hidden="hidden">{{ f.id }}</td>
+                            <td>
+                                <span id="mt{{ f.id }}" style="display: block;">MT</span>
+                                <span id="pe{{ f.id }}" style="display: none;">PE</span>
+                                <span id="dui{{ f.id }}"
+                                      style="display: none;color: green;vertical-align: middle;text-align: center;">√</span>
+
+                                <!--<a href="javascript:void(0);" style="display: none;" class="change_befor" onclick="change_befor({{ f.id }})" id="change_befor{{ f.id }}">修改前</a>-->
+                                <!--<a href="javascript:void(0);" style="display: none;" class="change_old" id="change_old{{ f.id }}">修改后</a>-->
+                            </td>
+                            <input type="text" value="{{ y.id }}" name="yiwen_id" hidden>
+                            <td id="yiwen" class="yiwen" style="text-align: left;">
+
+                                <!--<textarea name="yiwen" id="yiwen" cols="30" rows="10" hidden>{{y.yiwen}}</textarea>-->
+
+                                <div class="textarea yiwen_change" id="yiwen_show{{ f.id }}"
+                                     contenteditable="true" onblur="yiwen_change({{ f.id }})">{{ y.yiwen_wait_over }}
+                                </div>
+                                <span class="label label-info pull-right" title="QA检查" onclick="yiwen_change({{f.id}})" style="margin-right: 0;">QA</span>
+                                <input type="text" id="language_type" value="en-US" hidden="hidden">
+                            </td>
+                            <td>
+                                {% if type == 'de_zh' %}
+                                <a href="javascript:void(0);" id="click" onclick="bd_de_zhjson({{f.id}})">百度翻译</a>
+                                <a href="javascript:void(0);" id="sgclick" onclick="sg_de_zhjson({{f.id}})">搜狗翻译</a>
+                                {% elif type == 'de_en' %}
+                                <a href="javascript:void(0);" id="click" onclick="bd_de_enjson({{f.id}})">百度翻译</a>
+                                <a href="javascript:void(0);" id="sgclick" onclick="sg_de_enjson({{f.id}})">搜狗翻译</a>
+                                {% endif %}
+                            </td>
+                            <td hidden="hidden"><input type="text" name="yiwen" id="yiwen{{ y.id }}"
+                                                       value="{{ y.yiwen_wait_over }}"></td>
+                            <td><a class="button btn btn-default" id="submits" onclick="submits({{y.id}})">提交</a></td>
+                        </form>
+                    </tr>
+                    {% else %}
+                    {% endif %}
+                    {% endfor %}
+                </table>
+                <p class="text-center" id="on_jindu">
+                    <span>文件名称：<b>{{ file.file_name }}</b></span>
+                    <span>字数：<b id="numing">{{ file.numing }}</b>/{{ file.all_num }}</span>
+                    <span>句段数：<b id="paraing">{{ file.paraing }}</b>/{{ file.all_para }}</span>
+                    <span>完成进度：<b id="jindu">{{ file.jindu }}</b>%</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Modal1 -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">原文替换</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="yuan">查找目标：</label>
+                            <input type="text" class="form-control" id="yuan" placeholder="查找目标">
+                        </div>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="tihuan">替换为：</label>
+                            <input type="text" class="form-control" id="tihuan" placeholder="替换为">
+                        </div>
+                    </div>
+                    <div id="tihuan_msg" style="margin-left: 20px;"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" onclick="off()" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="submit({{ file_id }}, 0)">全部替换</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal2 -->
+        <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">译文替换</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="yuan">查找目标：</label>
+                            <input type="text" class="form-control" id="yiwen_yuan" placeholder="查找目标">
+                        </div>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="tihuan">替换为：</label>
+                            <input type="text" class="form-control" id="yiwen_tihuan" placeholder="替换为">
+                        </div>
+                    </div>
+                    <div id="yiwen_tihuan_msg" style="margin-left: 20px;"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" onclick="off()" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="yiwen_submit({{ file.id }})">全部替换
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input id="file_id" value="{{ file.id }}" hidden>
+        <input type="text" id="count_num" value="{{count}}" hidden>
+        <input type="text" id="fanyi_type" value="{{type}}" hidden>
+    </main>
+    <script src="{% static 'js/lib/jquery.js' %}"></script>
+    <script src="{% static 'work/js/app/work.js' %}"></script>
+    <script src="{% static 'work/js/app/md5.js' %}"></script>
+    <script>
+
+
+        $(window).scroll(function() {
+            if($(window).scrollTop() >= 150){
+                $("#top").css('position', 'fixed');
+                $("#top").css('top', '0');
+                $("#top").css('z-index', '99');
+                $("#top_top").css('display', 'block');
+            }else{
+                $("#top").css('position', 'relative');
+                $("#top_top").css('display', 'none');
+                $("#top").css('z-index', '0');
+            }
+        });
+    </script>
+
+    <script>
+        var count_num = $("#count_num").val();
+        var count_num = parseInt(count_num);
+        var file_id = {{file.id}}
+        var type = $('#fanyi_type').val();
+        $(window).scroll(function(){
+            var scrollTop = $(this).scrollTop();
+            var scrollHeight = $(document).height();
+            var windowHeight = $(this).height();
+            if(scrollTop + windowHeight == scrollHeight){
+                // console.log("count"+count)
+                var on_tr = $('#history_income_list tr:last').find('#index').text();
+                console.log("当前最后一行："+on_tr);
+                console.log(file_id);
+                on_tr = parseInt(on_tr);
+                // 把底部编辑进度取消固定
+                $("#on_jindu").css({"position":""});
+                $("#on_jindu").css({"margin-bottom":"60px"});
+
+                $.ajax({
+                    url:'/work/ajax_display/?nums='+count_num+'&file_id='+file_id,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        console.log(data.jindu_nums[0]);
+                        console.log(data.jindu_nums[0][0]);
+                        var jindu = '<span>文件名称：<b>'+ data.jindu_nums[0][0] +'</b></span>'+
+                                '<span>字数：<b id="numing">'+ data.jindu_nums[0][1] +'</b>/'+ data.jindu_nums[0][2] +'</span>' +
+                                '<span>句段数：<b id="paraing">'+ data.jindu_nums[0][3] +'</b>/'+ data.jindu_nums[0][4] +'</span>' +
+                                '<span>完成进度：<b id="jindu">'+ data.jindu_nums[0][5] +'</b>%</span>';
+                        $("#on_jindu").html(jindu);
+                        count = 0;
+                        while (count<data.yuanwen.length){
+                            on_tr+=1;
+                            var msg = data.yuanwen[count][1];
+                            // console.log(msg);
+                            var one_cell = "<tr data-uid='+ on_tr +'><form>{% csrf_token %}" +
+                                "<td id='index'>"+ on_tr +"</td>";
+                            var two_cell = '<td id="yuanwen" class="yuanwen" name="yuanwen" style="text-align: left;" style="position:relative;">\n' +
+                                '<a href="javascript:void(0);" style="display: none;" class="change_befor" onclick="change_befor('+ data.yuanwen[count][0] +')" id="change_befor'+ data.yuanwen[count][0] +'">' +
+                                '<i class="jb" id="jb'+ data.yuanwen[count][0] +'"></i></a>\n' +
+                                '<a href="javascript:void(0);" style="display: none;" class="change_old" onclick="change_old('+ data.yuanwen[count][0] +')" id="change_old'+ data.yuanwen[count][0] +'">' +
+                                '<i class="jb-old" id="jb_old'+ data.yuanwen[count][0] +'"></i></a>\n' +
+                                '<div class="textarea yuanwen_change" id="yuanwen_change'+ data.yuanwen[count][0] +'" contenteditable="true" onblur="yuanwen_change('+ data.yuanwen[count][0] +')"> '+ data.yuanwen[count][1] +' </div>' +
+                                '</td>';
+                            var three_cell = "<td hidden='hidden'>"+ data.yuanwen[count][0] +"</td>";
+                            var four_cell = ' <td><span id="mt'+ data.yuanwen[count][0] +'"style="display:block;">MT</span>' +
+                                '<span id="pe'+ data.yuanwen[count][0] +'"style="display:none;">PE</span>' +
+                                '<span id="dui'+ data.yuanwen[count][0] +'"style="display:none;color: green;vertical-align: middle;text-align: center;">√</span>' +
+                                '</td>'+
+                                '<input type="text" value="'+ data.yuanwen[count][0] +'" name="yiwen_id" hidden>"';
+                            var five_cell = '<td id="yiwen" class="yiwen" style="text-align: left;">' +
+                                '<div class="textarea yiwen_change" id="yiwen_show'+ data.yuanwen[count][0] +'" contenteditable="true" onblur="yiwen_change('+ data.yuanwen[count][0] +')">'+ data.yiwens[count][1] +'' +
+                                '</div>' +
+                                '<span class="label label-info pull-right" title="QA检查" onclick="yiwen_change('+ data.yuanwen[count][0] +')" style="margin-right: 0;">QA</span>'+
+                                '<input type="text" id="language_type" value="{{type}}" hidden="hidden">' +
+                                '</td>';
+
+                            if (type == 'de_zh'){
+                                var six_cell = '<td>' +
+                                '<a href="javascript:void(0);" id="click" onclick="bd_de_zhjson('+ data.yuanwen[count][0] +')">百度翻译</a>' +
+                                '<a href="javascript:void(0);" id="sgclick" onclick="sg_de_zhjson('+ data.yuanwen[count][0] +')">搜狗翻译</a>' +
+                                '</td>';
+                            }
+                            else if (type == 'de_en'){
+                                var six_cell = '<td>' +
+                                '<a href="javascript:void(0);" id="click" onclick="bd_de_enjson('+ data.yuanwen[count][0] +')">百度翻译</a>' +
+                                '<a href="javascript:void(0);" id="sgclick" onclick="sg_de_enjson('+ data.yuanwen[count][0] +')">搜狗翻译</a>' +
+                                '</td>';
+                            }
+                            
+                            var seven_cell = '<td hidden="hidden"><input type="text" name="yiwen" id="yiwen'+ data.yiwens[count][0] +'" value="'+ data.yiwens[count][1] +'"></td>' +
+                                '<td><a class="button btn btn-default" id="submits" onclick="submits('+ data.yiwens[count][0] +')">提交</a></td>' +
+                                '</form>' +
+                                '</tr>';
+
+                            var html = one_cell + two_cell + three_cell + four_cell + five_cell + six_cell + seven_cell;
+                            $("#history_income_list").append(html);
+                            count +=1;
+                        }
+                        count_num += count;
+                    console.log("count_num", count_num)
+                    }
+                })
+            }
+            else{
+                $("#on_jindu").css({"position":"fixed"});
+                $("#on_jindu").css({"margin-bottom":"0"});
+            }
+        });
+    </script>
+{% endblock %}

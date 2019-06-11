@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'work/css/app/style.css' %}">
+    <style>
+        #tips{
+            width: 333px;
+            height: 200px;
+            margin:16% auto;
+            text-align: center;
+        }
+        #tips a{
+            text-decoration: none;
+            color:yellowgreen;
+            line-height: 60px;
+            font-size: 20px;
+        }
+        #tips h1{
+            font-size: 30px;
+            font-weight: 600;
+        }
+    </style>
+<body>
+
+<div class="jq22-container">
+
+    <ul id="spinners">
+
+
+        <li data-id="4" class="active">
+
+            <div id="preloader_4">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+        </li>
+
+    </ul>
+    <div id="tips">
+        <h1>请稍等，正在编译...</h1>
+
+<a id="aa" href="/work/{{ id }}/enwork/" onclick="alert('如未显示完毕，请稍后刷新重试')">点我查看结果</a>
+    </div>
+
+</div>
+<script src="{% static 'js/lib/jquery.js' %}"></script>
+<script src="{% static 'work/js/app/js.js' %}"></script>
+
+
+</body>
+</html>
